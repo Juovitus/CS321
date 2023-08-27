@@ -1,0 +1,4 @@
+//TEAM MEMBERS: 
+//Noah Hoss (nmhoss@iastate.edu)
+//Tyler Lapinski (lapinski@iastate.edu)
+//Richard Gonzalez (RichG@iastate.edu)

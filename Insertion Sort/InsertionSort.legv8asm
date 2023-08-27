@@ -1,0 +1,117 @@
+//TEAM MEMBERS: 
+//Noah Hoss (nmhoss@iastate.edu)
+//Tyler Lapinski (lapinski@iastate.edu)
+//Richard Gonzalez (RichG@iastate.edu)
+Main:
+ADDI X1, XZR, #0
+ADDI X2, XZR, #22
+SUBI SP, SP, #16
+STUR X1, [SP, #0]	//Everything 8-bit
+STUR X2, [SP, #8]
+BL Fill			    //Fill array recursively
+LDUR X1, [SP, #0]
+LDUR X2, [SP, #8]
+ADDI SP, SP, #16
+SUBI X2, X2, #1
+BL InsertionSort
+BL Finish
+
+InsertionSort:
+SUBI SP, SP, #32	//Sub32-bits
+STUR X1, [SP, #0]	//Address
+STUR X11, [SP, #8]	//Count
+STUR X2, [SP, #16]	//Length	
+STUR LR, [SP, #24]	//Store in temp
+
+ADD X3, X2, XZR
+ADD X2, X11, XZR
+
+BL InsertSortedPos
+
+LDUR LR, [SP, #24]
+LDUR X2, [SP, #16]
+LDUR X11, [SP, #8]
+LDUR X1, [SP, #0]
+
+ADDI SP, SP, #32
+
+SUB X9, X2, X11
+CBZ X9, Return
+ADDI X11, X11, #1   //Add 1 to Count
+
+B InsertionSort     //Call Insertion Sort
+
+InsertSortedPos:
+LSL X21, X2, #3     //Address of X2 in Arr
+LDUR X11, [X21, #0] //Set X11 to Array value at X2
+
+SUBI SP, SP, #32
+STUR X1, [SP, #0]
+STUR X11, [SP, #8]
+STUR X2, [SP, #16]
+STUR LR, [SP, #24]
+
+ADD X2, X11, XZR //X11 incorrect here
+
+BL FindSortedPos    //Call FindSortedPos
+
+ADD X9, X1, XZR
+LDUR LR, [SP, #24]
+LDUR X2, [SP, #16]
+LDUR X11, [SP, #8]
+LDUR X1, [SP, #0]
+
+ADDI SP, SP, #32
+
+SUBI SP, SP, #40
+STUR X1, [SP, #0]
+STUR X9, [SP, #8]
+STUR X2, [SP, #16]
+STUR X11, [SP, #24]
+STUR LR, [SP, #32]
+
+ADD X3, X2, XZR
+ADD X2, X18, XZR
+
+BL ShiftRight
+
+LDUR LR, [SP, #32]
+LDUR X11, [SP, #24]
+LDUR X2, [SP, #16]
+LDUR X9, [SP, #8]
+LDUR X1, [SP, #0]
+ADDI SP, SP, #40
+
+LSL X9, X9, #3
+STUR X11, [X9, #0]
+B Return        //Check this idk if working right
+
+FindSortedPos:
+LDUR X11, [X1, #0]
+SUBS XZR, X11, X2
+B.GE Return
+ADDI X1, X1, #8
+B FindSortedPos
+
+ShiftRight:
+SUB X11, X3, X2
+CBZ X11, Return
+SUBI X3, X3, #1
+LSL X1, X3, #3
+LDUR X9, [X1, #8]   //Swap
+LDUR X11, [X1, #0]
+STUR X11, [X1, #8]
+B ShiftRight
+
+Fill:
+CBZ X2, Return
+STUR X2, [X1, #0]
+SUBI X2, X2, #1
+ADDI X1, x1, #8
+B Fill
+
+Return:
+BR LR
+
+Finish:
+DUMP            //Check output
